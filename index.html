@@ -5,340 +5,558 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Is Your Brand Invisible to AI?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#12142B;
-    --surface:#1B1E3D;
-    --surface-2:#232752;
-    --spotlight:#FFB454;
-    --spotlight-dim:#C97F2E;
-    --signal:#6EE7C8;
-    --text:#F3F1E7;
-    --text-muted:#9CA0C4;
-    --border:rgba(255,255,255,0.09);
+  :root {
+    /* DEFAULT THEME: DARK MODE */
+    --bg: #0a0a0a;
+    --ink: #ffffff;
+    --ink-light: #a3a3a3;
+    --ink-lighter: #555555;
+    --surface: #171717;
+    --border: #333333;
+    --grid-line: rgba(255, 255, 255, 0.06);
+    
+    /* ELECTRIC BLUE ACCENT (Dark Mode) */
+    --accent: #3b82f6; 
+    --accent-hover: #60a5fa;
+    --accent-dim: rgba(59, 130, 246, 0.15);
+
+    /* Inverted elements */
+    --invert-bg: #ffffff;
+    --invert-ink: #000000;
   }
-  *{ box-sizing:border-box; }
-  body{
-    margin:0;
-    background:
-      radial-gradient(ellipse at 20% -10%, rgba(255,180,84,0.10), transparent 45%),
-      radial-gradient(ellipse at 90% 10%, rgba(110,231,200,0.08), transparent 40%),
-      var(--bg);
-    color:var(--text);
-    font-family:'Inter', sans-serif;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
+
+  [data-theme="light"] {
+    /* OVERRIDE: LIGHT MODE */
+    --bg: #ffffff;
+    --ink: #000000;
+    --ink-light: #555555;
+    --ink-lighter: #888888;
+    --surface: #f9f9f9;
+    --border: #e5e5e5;
+    --grid-line: rgba(0, 0, 0, 0.04);
+    
+    /* ROYAL BLUE ACCENT (Light Mode) */
+    --accent: #2563eb; 
+    --accent-hover: #1d4ed8;
+    --accent-dim: rgba(37, 99, 235, 0.1);
+
+    --invert-bg: #000000;
+    --invert-ink: #ffffff;
   }
-  .wrap{ max-width:880px; margin:0 auto; padding:64px 24px 96px; }
-  h1,h2,h3{ font-family:'Space Grotesk', sans-serif; letter-spacing:-0.02em; margin:0; }
-  .mono{ font-family:'IBM Plex Mono', monospace; }
-  .eyebrow{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:var(--signal);
-    margin-bottom:14px;
-    display:flex; align-items:center; gap:10px;
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg);
+    background-image: 
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center top;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
   }
-  .eyebrow::before{
-    content:''; width:18px; height:1px; background:var(--signal); display:inline-block;
+
+  ::selection { background: var(--accent); color: #ffffff; }
+
+  .wrap { max-width: 880px; margin: 0 auto; padding: 100px 24px 120px; }
+
+  h1, h2, h3 { 
+    font-family: 'Space Grotesk', sans-serif; 
+    letter-spacing: -0.03em; 
+    color: var(--ink);
+    transition: color 0.4s ease;
+  }
+  
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  /* THEME TOGGLE BUTTON */
+  .theme-toggle {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    background: var(--surface);
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 4px 4px 0px var(--ink);
+    transition: all 0.3s ease;
+  }
+  .theme-toggle:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px var(--accent);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .theme-toggle:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px var(--accent);
+  }
+  .theme-toggle svg { width: 20px; height: 20px; fill: currentColor; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 20px;
+    display: flex; 
+    align-items: center; 
+    gap: 12px;
+    transition: color 0.4s ease;
+  }
+  .eyebrow::before {
+    content: ''; width: 24px; height: 1px; background: var(--accent); display: inline-block;
+    transition: background 0.4s ease;
   }
 
   /* HERO */
-  .hero{ padding-bottom:56px; border-bottom:1px solid var(--border); margin-bottom:56px; }
-  .hero h1{ font-size:44px; line-height:1.08; font-weight:700; max-width:640px; }
-  .hero p.sub{ color:var(--text-muted); font-size:18px; max-width:600px; margin-top:18px; }
+  .hero { padding-bottom: 72px; border-bottom: 2px solid var(--ink); margin-bottom: 72px; transition: border-color 0.4s ease; }
+  .hero h1 { font-size: 52px; line-height: 1.05; font-weight: 700; max-width: 700px; }
+  .hero p.sub { color: var(--ink-light); font-size: 19px; max-width: 600px; margin-top: 24px; transition: color 0.4s ease;}
 
-  /* Signature chat mock */
-  .chatcard{
-    margin-top:40px;
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:16px;
-    overflow:hidden;
-    box-shadow:0 24px 60px -20px rgba(0,0,0,0.5);
-  }
-  .chatcard-head{
-    display:flex; align-items:center; gap:8px;
-    padding:14px 18px;
-    border-bottom:1px solid var(--border);
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
-    color:var(--text-muted);
-  }
-  .dot{ width:8px; height:8px; border-radius:50%; background:var(--text-muted); opacity:0.4; }
-  .chatcard-body{ padding:22px 22px 26px; }
-  .q-bubble{
-    font-size:15px; color:var(--text-muted); margin-bottom:16px;
-  }
-  .q-bubble b{ color:var(--text); font-weight:500; }
-  .chips{ display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
-  .chip{
-    font-size:13.5px; padding:9px 16px; border-radius:100px;
-    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
-  }
-  .chip.ghost{
-    background:transparent;
-    border:1.5px dashed var(--spotlight-dim);
-    color:var(--spotlight);
-    display:flex; flex-direction:column; align-items:center; gap:2px;
-    padding:9px 16px 8px;
-  }
-  .chip.ghost .tag{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; letter-spacing:0.06em; opacity:0.85; text-transform:uppercase; }
-
-  /* SECTION */
-  .section{ margin-bottom:60px; }
-  .section h2{ font-size:26px; margin-bottom:16px; }
-  .section p{ color:var(--text-muted); font-size:15.5px; max-width:640px; }
-  .callout{
-    background:var(--surface);
-    border-left:3px solid var(--spotlight);
-    border-radius:8px;
-    padding:16px 20px;
-    margin:20px 0;
-    font-size:15px;
-    color:var(--text);
-  }
-
-  /* two-col before/after */
-  .shift{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:24px; }
-  .shift-card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; }
-  .shift-card .label{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; }
-  .shift-card .label.now{ color:var(--signal); }
-  .linkline{ height:6px; border-radius:3px; background:var(--surface-2); margin-bottom:8px; width:100%; }
-  .linkline:nth-child(2){ width:80%; }
-  .answerblock{ background:var(--surface-2); border-radius:8px; padding:14px; font-size:13.5px; color:var(--text-muted); }
-
-  /* Gauge with CSS Animation */
-  .gaugewrap{ display:flex; align-items:center; gap:28px; margin-top:24px; flex-wrap:wrap; }
-  .gaugenum{ font-family:'IBM Plex Mono', monospace; font-size:15px; color:var(--text-muted); }
-  .gaugenum b{ display:block; font-size:34px; color:var(--spotlight); font-weight:600; }
-  
-  @keyframes dropScore {
-    0% { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: 120; } /* Animates down to 23/100 mark */
-  }
-  .gauge-fill {
-    stroke-dasharray: 157;
-    stroke-dashoffset: 0;
-    animation: dropScore 1.8s cubic-bezier(0.25, 1, 0.5, 1) 0.5s forwards;
-  }
-
-  /* Pricing */
-  .tiers{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:28px; }
-  .tier{
-    background:var(--surface); border:1px solid var(--border); border-radius:16px;
-    padding:24px 20px; display:flex; flex-direction:column;
-  }
-  .tier.hi{ border-color:var(--spotlight-dim); background:linear-gradient(180deg, rgba(255,180,84,0.06), var(--surface) 40%); }
-  .tier .tname{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:17px; margin-bottom:6px; }
-  .tier .tprice{ font-family:'IBM Plex Mono', monospace; font-size:20px; color:var(--spotlight); margin-bottom:14px; }
-  .tier .tdesc{ font-size:13.5px; color:var(--text-muted); margin-bottom:16px; flex-grow:1; }
-  .effort{ margin-top:auto; }
-  .effort .elabel{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-bottom:6px; }
-  .ebar{ height:5px; border-radius:3px; background:var(--surface-2); overflow:hidden; }
-  .ebar span{ display:block; height:100%; background:var(--signal); }
-
-  /* Why it matters list */
-  .whylist{ list-style:none; padding:0; margin:24px 0 0; display:grid; gap:14px; }
-  .whylist li{ display:flex; gap:14px; font-size:15px; color:var(--text); align-items:flex-start; }
-  .whylist .ico{
-    flex-shrink:0; width:26px; height:26px; border-radius:8px;
-    background:rgba(255,180,84,0.14); color:var(--spotlight);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'IBM Plex Mono', monospace; font-size:13px;
-  }
-
-  /* Open questions */
-  .qgrid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:24px; }
-  .qcard{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
-  .qcard .qmark{ font-family:'IBM Plex Mono', monospace; color:var(--signal); font-size:13px; margin-bottom:8px; display:block; }
-  .qcard p{ margin:0; color:var(--text); font-size:14.5px; }
-
-  /* CTA Section */
-  .cta-box{
-    background: linear-gradient(145deg, var(--surface-2), var(--surface));
-    border: 1px solid var(--spotlight-dim);
-    border-radius: 16px;
-    padding: 32px 24px;
+  /* Interactive Chat Mockup */
+  .chatcard {
     margin-top: 48px;
-    text-align: center;
-    box-shadow: 0 12px 30px -10px rgba(0,0,0,0.4);
+    background: var(--bg);
+    border: 2px solid var(--ink);
+    box-shadow: 8px 8px 0px var(--ink);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 0.3s ease;
   }
-  .cta-box h3 { font-size: 22px; color: var(--text); margin-bottom: 8px; }
-  .cta-box p { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; }
-  .cta-form { display: flex; gap: 12px; max-width: 440px; margin: 0 auto; }
+  .chatcard:hover { transform: translate(-2px, -2px); box-shadow: 12px 12px 0px var(--ink); }
+  
+  .chatcard-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 20px;
+    border-bottom: 2px solid var(--ink);
+    background: var(--surface);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink); }
+  .dot.filled { background: var(--accent); border-color: var(--accent); }
+  
+  .chatcard-body { padding: 32px 24px; }
+  
+  .q-bubble { font-size: 16px; margin-bottom: 24px; display: flex; gap: 12px;}
+  .q-bubble .user-icon { 
+    width: 24px; height: 24px; background: var(--accent); color: #ffffff; 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 12px; font-weight: bold; border-radius: 2px; flex-shrink: 0;
+  }
+  .typing-text { 
+    font-weight: 500; border-right: 2px solid var(--accent); 
+    white-space: nowrap; overflow: hidden; width: 0;
+  }
+  
+  .is-typing .typing-text { animation: typing 2s steps(40, end) forwards, blink 0.75s step-end infinite; }
+  @keyframes typing { from { width: 0 } to { width: 100% } }
+  @keyframes blink { from, to { border-color: transparent } 50% { border-color: var(--accent); } }
+
+  .chips { 
+    display: flex; flex-wrap: wrap; gap: 12px; 
+    opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease 2.5s, transform 0.5s ease 2.5s; 
+  }
+  .is-typing .chips { opacity: 1; transform: translateY(0); }
+
+  .chip {
+    font-size: 14px; font-weight: 500; padding: 10px 20px; border-radius: 2px;
+    background: var(--bg); border: 1.5px solid var(--ink); color: var(--ink);
+    transition: all 0.2s ease; cursor: default;
+  }
+  .chip:hover { background: var(--ink); color: var(--bg); }
+  
+  /* Highlight the pain point in Blue */
+  .chip.ghost {
+    background: var(--accent-dim); border: 1.5px dashed var(--accent); color: var(--accent);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    cursor: crosshair;
+  }
+  .chip.ghost .tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600;}
+
+  /* SECTIONS */
+  .section { margin-bottom: 80px; }
+  .section h2 { font-size: 32px; margin-bottom: 20px; }
+  .section p { color: var(--ink-light); font-size: 17px; max-width: 640px; transition: color 0.4s ease;}
+  
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: var(--surface);
+    padding: 24px;
+    margin: 32px 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  /* Two-col Shift Diagram */
+  .shift { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
+  .shift-card { 
+    background: var(--bg); border: 1.5px solid var(--border); 
+    padding: 24px; position: relative;
+    transition: all 0.3s ease;
+  }
+  .shift-card:hover { border-color: var(--ink); }
+  .shift-card .label { 
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; 
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 16px; 
+  }
+  
+  /* Highlight the new AI search paradigm */
+  .shift-card.now { border-color: var(--accent); box-shadow: 4px 4px 0 var(--accent); }
+  .shift-card.now .label.now { color: var(--accent); font-weight: 600; }
+  .shift-card.now .answerblock { background: var(--accent); color: #ffffff; }
+  
+  .wire-link { height: 8px; background: var(--border); margin-bottom: 12px; width: 100%; transition: background 0.4s ease;}
+  .wire-link:nth-child(2) { width: 80%; }
+  .wire-link:nth-child(3) { width: 90%; }
+  
+  .answerblock { padding: 16px; font-size: 14px; font-weight: 500; }
+
+  /* Interactive Gauge */
+  .gaugewrap { display: flex; align-items: center; gap: 40px; margin-top: 40px; }
+  .gauge-container { position: relative; width: 160px; height: 90px; overflow: hidden; }
+  .gaugenum { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--ink-light); text-transform: uppercase;}
+  
+  /* Highlight the failing score */
+  .gaugenum b { display: block; font-size: 48px; color: var(--accent); font-weight: 700; line-height: 1; margin-top: 8px; font-family: 'Space Grotesk', sans-serif;}
+  
+  /* Pricing Tiers */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+  .tier {
+    background: var(--surface); border: 1.5px solid var(--border); 
+    padding: 32px 24px; display: flex; flex-direction: column;
+    transition: all 0.3s ease; position: relative;
+  }
+  .tier:hover { border-color: var(--ink); transform: translateY(-4px); box-shadow: 8px 8px 0px var(--border); }
+  
+  /* Highlight the Full-Service tier */
+  .tier.hi { 
+    background: var(--invert-bg); color: var(--invert-ink); border-color: var(--accent); 
+    box-shadow: 8px 8px 0px var(--accent);
+  }
+  .tier.hi:hover { box-shadow: 12px 12px 0px var(--accent); transform: translateY(-4px); }
+  
+  .tier .tname { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; margin-bottom: 8px; }
+  .tier .tprice { font-family: 'IBM Plex Mono', monospace; font-size: 24px; margin-bottom: 16px; }
+  .tier.hi .tprice { color: var(--accent); }
+  .tier .tdesc { font-size: 15px; color: var(--ink-light); margin-bottom: 32px; flex-grow: 1; }
+  .tier.hi .tdesc { color: var(--invert-ink); opacity: 0.8; }
+  
+  .effort .elabel { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .ebar { height: 6px; background: var(--bg); border: 1px solid var(--border); width: 100%; transition: background 0.4s ease;}
+  .tier.hi .ebar { background: rgba(128,128,128,0.2); border-color: transparent; }
+  .ebar span { display: block; height: 100%; background: var(--ink); transition: width 1s ease-out, background 0.4s ease; }
+  .tier.hi .ebar span { background: var(--accent); }
+
+  /* List */
+  .whylist { list-style: none; margin: 32px 0 0; display: grid; gap: 24px; }
+  .whylist li { display: flex; gap: 20px; font-size: 17px; align-items: flex-start; }
+  .whylist .ico {
+    flex-shrink: 0; width: 32px; height: 32px; border: 1.5px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600;
+  }
+
+  /* Open questions grid */
+  .qgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
+  .qcard { 
+    background: var(--surface); border: 1.5px solid var(--border); 
+    padding: 24px; transition: background 0.2s, border-color 0.2s;
+  }
+  .qcard:hover { background: var(--bg); border-color: var(--accent); }
+  .qcard .qmark { font-family: 'IBM Plex Mono', monospace; color: var(--ink); font-size: 14px; font-weight: 600; margin-bottom: 12px; display: block; }
+  .qcard p { font-size: 16px; color: var(--ink); margin: 0; font-weight: 500; }
+
+  /* Tactile CTA */
+  .cta-box {
+    border: 3px solid var(--accent);
+    padding: 48px 32px;
+    margin-top: 80px;
+    text-align: center;
+    background: var(--accent-dim);
+    position: relative;
+    transition: all 0.4s ease;
+  }
+  .cta-box::before, .cta-box::after {
+    content: ''; position: absolute; width: 12px; height: 12px; background: var(--accent);
+  }
+  .cta-box::before { top: -3px; left: -3px; }
+  .cta-box::after { bottom: -3px; right: -3px; }
+
+  .cta-box h3 { font-size: 28px; margin-bottom: 12px; }
+  .cta-box p { color: var(--ink-light); font-size: 17px; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;}
+  
+  .cta-form { display: flex; gap: 0; max-width: 500px; margin: 0 auto; }
   .cta-form input { 
     flex-grow: 1; 
-    background: var(--bg); 
-    border: 1px solid var(--border); 
-    border-radius: 8px; 
-    padding: 14px 16px; 
-    color: var(--text); 
-    font-family: 'Inter', sans-serif;
+    background: var(--surface); 
+    border: 2px solid var(--accent); 
+    border-right: none;
+    padding: 16px 20px; 
+    font-size: 16px;
+    color: var(--ink); 
+    font-family: 'IBM Plex Mono', monospace;
     outline: none;
-    transition: border-color 0.2s;
+    transition: background 0.2s;
   }
-  .cta-form input:focus { border-color: var(--signal); }
+  .cta-form input:focus { background: var(--bg); }
   .cta-form button { 
-    background: var(--spotlight); 
-    color: #12142B; 
-    border: none; 
-    border-radius: 8px; 
-    padding: 14px 24px; 
+    background: var(--accent); 
+    color: #ffffff; 
+    border: 2px solid var(--accent); 
+    padding: 16px 32px; 
+    font-size: 16px;
     font-weight: 600; 
     font-family: 'Inter', sans-serif; 
     cursor: pointer; 
-    transition: opacity 0.2s; 
+    transition: all 0.2s; 
   }
-  .cta-form button:hover { opacity: 0.9; }
+  .cta-form button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .cta-form button:active { transform: scale(0.98); }
 
-  footer{
-    border-top:1px solid var(--border);
-    padding-top:24px; margin-top:64px;
-    font-size:13px; color:var(--text-muted); font-style:italic;
+  footer {
+    border-top: 1.5px solid var(--border);
+    padding-top: 32px; margin-top: 80px;
+    font-size: 14px; color: var(--ink-lighter);
+    font-family: 'IBM Plex Mono', monospace;
   }
 
-  @media (max-width:640px){
-    .hero h1{ font-size:32px; }
-    .tiers{ grid-template-columns:1fr; }
-    .shift{ grid-template-columns:1fr; }
-    .qgrid{ grid-template-columns:1fr; }
-    .wrap{ padding:40px 18px 72px; }
+  /* Scroll Reveal Utilities */
+  .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+  .reveal.active { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 40px; }
+    .tiers { grid-template-columns: 1fr; }
+    .shift { grid-template-columns: 1fr; }
+    .qgrid { grid-template-columns: 1fr; }
     .cta-form { flex-direction: column; }
+    .cta-form input { border-right: 2px solid var(--accent); border-bottom: none; }
+    .wrap { padding: 80px 20px 80px; }
+    .theme-toggle { top: 16px; right: 16px; width: 40px; height: 40px; }
   }
 </style>
 </head>
 <body>
+
+<!-- Brutalist Theme Toggle -->
+<button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme" title="Toggle Light/Dark Mode">
+  <!-- Default icon set via JS -->
+</button>
+
 <div class="wrap">
 
-  <div class="hero">
+  <div class="hero reveal active">
     <div class="eyebrow">A product idea in progress</div>
     <h1>Is your brand invisible to AI?</h1>
     <p class="sub">ChatGPT and Perplexity are replacing Google Search. We tell you if your brand shows up in their answers—and how to fix it if you don't.</p>
 
-    <div class="chatcard">
+    <div class="chatcard" id="hero-chat">
       <div class="chatcard-head">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        <span style="margin-left:6px;">AI ASSISTANT</span>
+        <span class="dot filled"></span><span class="dot"></span><span class="dot"></span>
+        <span style="margin-left:8px;">AI_ASSISTANT_TERMINAL</span>
       </div>
       <div class="chatcard-body">
-        <div class="q-bubble"><b>"Best homegrown D2C clean beauty brands under ₹1000?"</b></div>
+        <div class="q-bubble">
+          <div class="user-icon">U</div>
+          <div class="typing-text">"Best homegrown D2C clean beauty brands?"</div>
+        </div>
         <div class="chips">
           <div class="chip">Minimalist</div>
           <div class="chip">Plum Goodness</div>
           <div class="chip">Dot & Key</div>
-          <div class="chip ghost">— your brand —<span class="tag">not mentioned</span></div>
+          <div class="chip ghost" title="Does not compute.">— your brand —<span class="tag">not mentioned</span></div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="section">
+  <div class="section reveal">
     <div class="eyebrow">The problem</div>
     <h2>People stopped clicking through</h2>
     <p>Instead of scrolling ten blue links, people now just ask AI and take whatever answer comes back. If your brand isn't in that answer, it doesn't matter how fast your Shopify site is — the customer never even sees you.</p>
-    <div class="callout">Think of it like the best restaurant in town whose one trusted concierge has never heard of it. Great restaurant, zero referrals.</div>
+    
+    <div class="callout">
+      Think of it like the best restaurant in town whose one trusted concierge has never heard of it. Great restaurant, zero referrals.
+    </div>
+    
     <div class="shift">
       <div class="shift-card">
-        <div class="label">Old world</div>
-        <div class="linkline"></div><div class="linkline"></div><div class="linkline"></div>
-        <div class="linkline" style="width:60%"></div>
-        <div style="font-size:12.5px;color:var(--text-muted);margin-top:8px;">10 links, you pick one</div>
+        <div class="label">Old search (Google)</div>
+        <div class="wire-link"></div>
+        <div class="wire-link"></div>
+        <div class="wire-link"></div>
+        <div style="font-size:13px;color:var(--ink-light);margin-top:16px;font-family:'IBM Plex Mono', monospace;">10 links, user does the work.</div>
       </div>
-      <div class="shift-card">
-        <div class="label now">Now</div>
-        <div class="answerblock">"Here's what I'd recommend, based on..."</div>
-        <div style="font-size:12.5px;color:var(--text-muted);margin-top:8px;">One answer. No links. No second guess.</div>
+      <div class="shift-card now">
+        <div class="label now">New search (AI)</div>
+        <div class="answerblock">"Here are the top 3 options I'd recommend..."</div>
+        <div style="font-size:13px;color:var(--accent);margin-top:16px;font-weight:600;font-family:'IBM Plex Mono', monospace;">One answer. No links. No second guess.</div>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="eyebrow">What we'd measure</div>
+  <div class="section reveal" id="gauge-section">
+    <div class="eyebrow">What we measure</div>
     <h2>What is "AI visibility," exactly?</h2>
-    <p>When someone asks an AI tool a question relevant to your product category — does it mention you? Recommend a competitor instead? That's the score, tracked over time.</p>
+    <p>When someone asks an AI tool a question relevant to your product category — does it mention you? Recommend a competitor instead? That's your score.</p>
+    
     <div class="gaugewrap">
-      <svg width="120" height="70" viewBox="0 0 120 70">
-        <!-- Background track -->
-        <path d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke="#232752" stroke-width="10" stroke-linecap="round"/>
-        <!-- Animated fill path -->
-        <path class="gauge-fill" d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke="#FFB454" stroke-width="10" stroke-linecap="round"/>
-      </svg>
-      <div class="gaugenum">AI visibility score<b>23<span style="font-size:16px;color:var(--text-muted);">/100</span></b></div>
+      <div class="gauge-container">
+        <svg width="160" height="90" viewBox="0 0 160 90">
+          <!-- Track -->
+          <path d="M10 80 A 70 70 0 0 1 150 80" fill="none" stroke="var(--border)" stroke-width="12" stroke-linecap="butt"/>
+          <!-- Animated Fill (controlled by JS) -->
+          <path id="gauge-fill" d="M10 80 A 70 70 0 0 1 150 80" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="butt" 
+                stroke-dasharray="220" stroke-dashoffset="220" style="transition: stroke-dashoffset 2s cubic-bezier(0.22, 1, 0.36, 1);"/>
+        </svg>
+      </div>
+      <div class="gaugenum">Visibility Score<b>23<span style="font-size:20px;color:var(--ink-lighter);">/100</span></b></div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="eyebrow">Why it'd matter to you</div>
+  <div class="section reveal">
+    <div class="eyebrow">Why it matters</div>
     <h2>The part founders usually miss</h2>
     <ul class="whylist">
       <li><span class="ico">01</span>You're paying ₹800+ CAC on Meta, while Perplexity is sending high-intent buyers straight to your competitor for free because their name was seeded in a Reddit thread.</li>
       <li><span class="ico">02</span>LLMs don't care about your website structure. They care about your presence on Reddit, Quora, niche blogs, and YouTube transcripts—their actual training data.</li>
-      <li><span class="ico">03</span>Your SEO playbook was built for Google search, not AI answers. It is a completely different game with different rules.</li>
+      <li><span class="ico">03</span>Your SEO playbook was built for Google search, not AI answers. It is a completely different game requiring a different infrastructure.</li>
     </ul>
   </div>
 
-  <div class="section">
-    <div class="eyebrow">What we'd build</div>
+  <div class="section reveal">
+    <div class="eyebrow">What we build</div>
     <h2>Three ways to use it</h2>
-    <p>The free score is the hook. It's meant to make a founder go "wait, we barely show up at all?" — and want to do something about it.</p>
+    <p>The free score is the diagnostic. It's meant to make a founder go "wait, we barely show up?" — and want to do something about it.</p>
     <div class="tiers">
       <div class="tier">
-        <div class="tname">Free Score</div>
+        <div class="tname">Free Audit</div>
         <div class="tprice">₹0</div>
         <div class="tdesc">A one-time snapshot of how visible you are to AI right now. Anyone can run it.</div>
         <div class="effort">
           <div class="elabel">Effort required</div>
-          <div class="ebar"><span style="width:0%"></span></div>
+          <div class="ebar"><span style="width:5%"></span></div>
         </div>
       </div>
       <div class="tier">
-        <div class="tname">DIY Dashboard</div>
-        <div class="tprice mono">₹5k–10k<span style="font-size:13px;color:var(--text-muted);">/mo</span></div>
+        <div class="tname">DIY Platform</div>
+        <div class="tprice mono">₹5k–10k<span style="font-size:14px;color:var(--ink-lighter);">/mo</span></div>
         <div class="tdesc">Ongoing tracking, competitor comparison, and ready-made content seeding suggestions. You execute.</div>
         <div class="effort">
           <div class="elabel">Effort required</div>
-          <div class="ebar"><span style="width:65%"></span></div>
+          <div class="ebar"><span style="width:75%"></span></div>
         </div>
       </div>
       <div class="tier hi">
         <div class="tname">Full-Service</div>
-        <div class="tprice mono">₹40k–80k+<span style="font-size:13px;color:var(--text-muted);">/mo</span></div>
-        <div class="tdesc">Everything in DIY, plus our team handles the digital PR and structured data optimization for you.</div>
+        <div class="tprice mono">₹40k–80k+<span style="font-size:14px;opacity:0.6;">/mo</span></div>
+        <div class="tdesc">Everything in DIY, plus our team handles the digital PR and data optimization for you.</div>
         <div class="effort">
           <div class="elabel">Effort required</div>
-          <div class="ebar"><span style="width:20%"></span></div>
+          <div class="ebar"><span style="width:15%"></span></div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="section" style="margin-bottom:0;">
+  <div class="section reveal" style="margin-bottom:0;">
     <div class="eyebrow">Still figuring out</div>
     <h2>What we'd love your honest take on</h2>
     <div class="qgrid">
-      <div class="qcard"><span class="qmark">Q →</span><p>Would you actually trust and act on an automated AI visibility score?</p></div>
-      <div class="qcard"><span class="qmark">Q →</span><p>Would you rather execute the fix in-house (SEO team), or want it handled for you entirely?</p></div>
-      <div class="qcard"><span class="qmark">Q →</span><p>Does regional-language visibility (Hindi, Tamil, etc.) matter to your current growth strategy?</p></div>
-      <div class="qcard"><span class="qmark">Q →</span><p>What would make you actually pull the trigger and pay for this?</p></div>
+      <div class="qcard"><span class="qmark">Q.01</span><p>Would you actually trust and act on an automated AI visibility score?</p></div>
+      <div class="qcard"><span class="qmark">Q.02</span><p>Would you rather execute the fix in-house (SEO team), or want it handled for you entirely?</p></div>
+      <div class="qcard"><span class="qmark">Q.03</span><p>Does regional-language visibility (Hindi, Tamil, etc.) matter to your current growth strategy?</p></div>
+      <div class="qcard"><span class="qmark">Q.04</span><p>What would make you actually pull the trigger and pay for this?</p></div>
     </div>
   </div>
 
-  <!-- Frictionless CTA -->
-  <div class="cta-box">
+  <!-- Tactile CTA -->
+  <div class="cta-box reveal">
     <h3>Curious where you stand?</h3>
     <p>Drop your brand URL, and I'll manually run a free baseline AI visibility test for you within 24 hours.</p>
-    <form class="cta-form" onsubmit="event.preventDefault(); alert('In a live environment, this would submit their URL to you!');">
+    <form class="cta-form" onsubmit="event.preventDefault(); this.querySelector('button').innerText = 'Request Sent.';">
       <input type="text" placeholder="yourbrand.com" required>
       <button type="submit">Run Free Test</button>
     </form>
   </div>
 
-  <footer>This is an early-stage idea we're validating — not a finished product. Honest reactions, including "this is useless, here's why," are worth more to us than polite encouragement.</footer>
+  <footer class="reveal">
+    // This is an early-stage idea we're validating — not a finished product.<br>
+    // Honest reactions, including "this is useless, here's why," are worth more to us than polite encouragement.
+  </footer>
 
 </div>
+
+<script>
+  // --- THEME TOGGLE LOGIC ---
+  const themeBtn = document.getElementById('theme-toggle');
+  const rootEl = document.documentElement;
+  
+  const iconSun = `<svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06z"/></svg>`;
+  const iconMoon = `<svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>`;
+
+  themeBtn.innerHTML = iconSun;
+
+  themeBtn.addEventListener('click', () => {
+    const currentTheme = rootEl.getAttribute('data-theme');
+    if (currentTheme === 'light') {
+      rootEl.removeAttribute('data-theme');
+      themeBtn.innerHTML = iconSun;
+    } else {
+      rootEl.setAttribute('data-theme', 'light');
+      themeBtn.innerHTML = iconMoon;
+    }
+  });
+
+  // --- ANIMATION LOGIC ---
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+      document.getElementById('hero-chat').classList.add('is-typing');
+    }, 500);
+  });
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.15
+  };
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        
+        if (entry.target.id === 'gauge-section') {
+          setTimeout(() => {
+            document.getElementById('gauge-fill').style.strokeDashoffset = '170';
+          }, 300);
+        }
+        
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+  });
+</script>
 </body>
 </html>
