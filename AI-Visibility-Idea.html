@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Is Your Brand Invisible to AI?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12142B;
+    --surface:#1B1E3D;
+    --surface-2:#232752;
+    --spotlight:#FFB454;
+    --spotlight-dim:#C97F2E;
+    --signal:#6EE7C8;
+    --text:#F3F1E7;
+    --text-muted:#9CA0C4;
+    --border:rgba(255,255,255,0.09);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(255,180,84,0.10), transparent 45%),
+      radial-gradient(ellipse at 90% 10%, rgba(110,231,200,0.08), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width:880px; margin:0 auto; padding:64px 24px 96px; }
+  h1,h2,h3{ font-family:'Space Grotesk', sans-serif; letter-spacing:-0.02em; margin:0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--signal);
+    margin-bottom:14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{
+    content:''; width:18px; height:1px; background:var(--signal); display:inline-block;
+  }
+
+  /* HERO */
+  .hero{ padding-bottom:56px; border-bottom:1px solid var(--border); margin-bottom:56px; }
+  .hero h1{ font-size:44px; line-height:1.08; font-weight:700; max-width:640px; }
+  .hero p.sub{ color:var(--text-muted); font-size:18px; max-width:600px; margin-top:18px; }
+
+  /* Signature chat mock */
+  .chatcard{
+    margin-top:40px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,0.5);
+  }
+  .chatcard-head{
+    display:flex; align-items:center; gap:8px;
+    padding:14px 18px;
+    border-bottom:1px solid var(--border);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--text-muted);
+  }
+  .dot{ width:8px; height:8px; border-radius:50%; background:var(--text-muted); opacity:0.4; }
+  .chatcard-body{ padding:22px 22px 26px; }
+  .q-bubble{
+    font-size:15px; color:var(--text-muted); margin-bottom:16px;
+  }
+  .q-bubble b{ color:var(--text); font-weight:500; }
+  .chips{ display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+  .chip{
+    font-size:13.5px; padding:9px 16px; border-radius:100px;
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+  }
+  .chip.ghost{
+    background:transparent;
+    border:1.5px dashed var(--spotlight-dim);
+    color:var(--spotlight);
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:9px 16px 8px;
+  }
+  .chip.ghost .tag{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; letter-spacing:0.06em; opacity:0.85; text-transform:uppercase; }
+
+  /* SECTION */
+  .section{ margin-bottom:60px; }
+  .section h2{ font-size:26px; margin-bottom:16px; }
+  .section p{ color:var(--text-muted); font-size:15.5px; max-width:640px; }
+  .callout{
+    background:var(--surface);
+    border-left:3px solid var(--spotlight);
+    border-radius:8px;
+    padding:16px 20px;
+    margin:20px 0;
+    font-size:15px;
+    color:var(--text);
+  }
+
+  /* two-col before/after */
+  .shift{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:24px; }
+  .shift-card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; }
+  .shift-card .label{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; }
+  .shift-card .label.now{ color:var(--signal); }
+  .linkline{ height:6px; border-radius:3px; background:var(--surface-2); margin-bottom:8px; width:100%; }
+  .linkline:nth-child(2){ width:80%; }
+  .answerblock{ background:var(--surface-2); border-radius:8px; padding:14px; font-size:13.5px; color:var(--text-muted); }
+
+  /* Gauge with CSS Animation */
+  .gaugewrap{ display:flex; align-items:center; gap:28px; margin-top:24px; flex-wrap:wrap; }
+  .gaugenum{ font-family:'IBM Plex Mono', monospace; font-size:15px; color:var(--text-muted); }
+  .gaugenum b{ display:block; font-size:34px; color:var(--spotlight); font-weight:600; }
+  
+  @keyframes dropScore {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 120; } /* Animates down to 23/100 mark */
+  }
+  .gauge-fill {
+    stroke-dasharray: 157;
+    stroke-dashoffset: 0;
+    animation: dropScore 1.8s cubic-bezier(0.25, 1, 0.5, 1) 0.5s forwards;
+  }
+
+  /* Pricing */
+  .tiers{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:28px; }
+  .tier{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    padding:24px 20px; display:flex; flex-direction:column;
+  }
+  .tier.hi{ border-color:var(--spotlight-dim); background:linear-gradient(180deg, rgba(255,180,84,0.06), var(--surface) 40%); }
+  .tier .tname{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:17px; margin-bottom:6px; }
+  .tier .tprice{ font-family:'IBM Plex Mono', monospace; font-size:20px; color:var(--spotlight); margin-bottom:14px; }
+  .tier .tdesc{ font-size:13.5px; color:var(--text-muted); margin-bottom:16px; flex-grow:1; }
+  .effort{ margin-top:auto; }
+  .effort .elabel{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-bottom:6px; }
+  .ebar{ height:5px; border-radius:3px; background:var(--surface-2); overflow:hidden; }
+  .ebar span{ display:block; height:100%; background:var(--signal); }
+
+  /* Why it matters list */
+  .whylist{ list-style:none; padding:0; margin:24px 0 0; display:grid; gap:14px; }
+  .whylist li{ display:flex; gap:14px; font-size:15px; color:var(--text); align-items:flex-start; }
+  .whylist .ico{
+    flex-shrink:0; width:26px; height:26px; border-radius:8px;
+    background:rgba(255,180,84,0.14); color:var(--spotlight);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:13px;
+  }
+
+  /* Open questions */
+  .qgrid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:24px; }
+  .qcard{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
+  .qcard .qmark{ font-family:'IBM Plex Mono', monospace; color:var(--signal); font-size:13px; margin-bottom:8px; display:block; }
+  .qcard p{ margin:0; color:var(--text); font-size:14.5px; }
+
+  /* CTA Section */
+  .cta-box{
+    background: linear-gradient(145deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--spotlight-dim);
+    border-radius: 16px;
+    padding: 32px 24px;
+    margin-top: 48px;
+    text-align: center;
+    box-shadow: 0 12px 30px -10px rgba(0,0,0,0.4);
+  }
+  .cta-box h3 { font-size: 22px; color: var(--text); margin-bottom: 8px; }
+  .cta-box p { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; }
+  .cta-form { display: flex; gap: 12px; max-width: 440px; margin: 0 auto; }
+  .cta-form input { 
+    flex-grow: 1; 
+    background: var(--bg); 
+    border: 1px solid var(--border); 
+    border-radius: 8px; 
+    padding: 14px 16px; 
+    color: var(--text); 
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .cta-form input:focus { border-color: var(--signal); }
+  .cta-form button { 
+    background: var(--spotlight); 
+    color: #12142B; 
+    border: none; 
+    border-radius: 8px; 
+    padding: 14px 24px; 
+    font-weight: 600; 
+    font-family: 'Inter', sans-serif; 
+    cursor: pointer; 
+    transition: opacity 0.2s; 
+  }
+  .cta-form button:hover { opacity: 0.9; }
+
+  footer{
+    border-top:1px solid var(--border);
+    padding-top:24px; margin-top:64px;
+    font-size:13px; color:var(--text-muted); font-style:italic;
+  }
+
+  @media (max-width:640px){
+    .hero h1{ font-size:32px; }
+    .tiers{ grid-template-columns:1fr; }
+    .shift{ grid-template-columns:1fr; }
+    .qgrid{ grid-template-columns:1fr; }
+    .wrap{ padding:40px 18px 72px; }
+    .cta-form { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eyebrow">A product idea in progress</div>
+    <h1>Is your brand invisible to AI?</h1>
+    <p class="sub">ChatGPT and Perplexity are replacing Google Search. We tell you if your brand shows up in their answers—and how to fix it if you don't.</p>
+
+    <div class="chatcard">
+      <div class="chatcard-head">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span style="margin-left:6px;">AI ASSISTANT</span>
+      </div>
+      <div class="chatcard-body">
+        <div class="q-bubble"><b>"Best homegrown D2C clean beauty brands under ₹1000?"</b></div>
+        <div class="chips">
+          <div class="chip">Minimalist</div>
+          <div class="chip">Plum Goodness</div>
+          <div class="chip">Dot & Key</div>
+          <div class="chip ghost">— your brand —<span class="tag">not mentioned</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="eyebrow">The problem</div>
+    <h2>People stopped clicking through</h2>
+    <p>Instead of scrolling ten blue links, people now just ask AI and take whatever answer comes back. If your brand isn't in that answer, it doesn't matter how fast your Shopify site is — the customer never even sees you.</p>
+    <div class="callout">Think of it like the best restaurant in town whose one trusted concierge has never heard of it. Great restaurant, zero referrals.</div>
+    <div class="shift">
+      <div class="shift-card">
+        <div class="label">Old world</div>
+        <div class="linkline"></div><div class="linkline"></div><div class="linkline"></div>
+        <div class="linkline" style="width:60%"></div>
+        <div style="font-size:12.5px;color:var(--text-muted);margin-top:8px;">10 links, you pick one</div>
+      </div>
+      <div class="shift-card">
+        <div class="label now">Now</div>
+        <div class="answerblock">"Here's what I'd recommend, based on..."</div>
+        <div style="font-size:12.5px;color:var(--text-muted);margin-top:8px;">One answer. No links. No second guess.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="eyebrow">What we'd measure</div>
+    <h2>What is "AI visibility," exactly?</h2>
+    <p>When someone asks an AI tool a question relevant to your product category — does it mention you? Recommend a competitor instead? That's the score, tracked over time.</p>
+    <div class="gaugewrap">
+      <svg width="120" height="70" viewBox="0 0 120 70">
+        <!-- Background track -->
+        <path d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke="#232752" stroke-width="10" stroke-linecap="round"/>
+        <!-- Animated fill path -->
+        <path class="gauge-fill" d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke="#FFB454" stroke-width="10" stroke-linecap="round"/>
+      </svg>
+      <div class="gaugenum">AI visibility score<b>23<span style="font-size:16px;color:var(--text-muted);">/100</span></b></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="eyebrow">Why it'd matter to you</div>
+    <h2>The part founders usually miss</h2>
+    <ul class="whylist">
+      <li><span class="ico">01</span>You're paying ₹800+ CAC on Meta, while Perplexity is sending high-intent buyers straight to your competitor for free because their name was seeded in a Reddit thread.</li>
+      <li><span class="ico">02</span>LLMs don't care about your website structure. They care about your presence on Reddit, Quora, niche blogs, and YouTube transcripts—their actual training data.</li>
+      <li><span class="ico">03</span>Your SEO playbook was built for Google search, not AI answers. It is a completely different game with different rules.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="eyebrow">What we'd build</div>
+    <h2>Three ways to use it</h2>
+    <p>The free score is the hook. It's meant to make a founder go "wait, we barely show up at all?" — and want to do something about it.</p>
+    <div class="tiers">
+      <div class="tier">
+        <div class="tname">Free Score</div>
+        <div class="tprice">₹0</div>
+        <div class="tdesc">A one-time snapshot of how visible you are to AI right now. Anyone can run it.</div>
+        <div class="effort">
+          <div class="elabel">Effort required</div>
+          <div class="ebar"><span style="width:0%"></span></div>
+        </div>
+      </div>
+      <div class="tier">
+        <div class="tname">DIY Dashboard</div>
+        <div class="tprice mono">₹5k–10k<span style="font-size:13px;color:var(--text-muted);">/mo</span></div>
+        <div class="tdesc">Ongoing tracking, competitor comparison, and ready-made content seeding suggestions. You execute.</div>
+        <div class="effort">
+          <div class="elabel">Effort required</div>
+          <div class="ebar"><span style="width:65%"></span></div>
+        </div>
+      </div>
+      <div class="tier hi">
+        <div class="tname">Full-Service</div>
+        <div class="tprice mono">₹40k–80k+<span style="font-size:13px;color:var(--text-muted);">/mo</span></div>
+        <div class="tdesc">Everything in DIY, plus our team handles the digital PR and structured data optimization for you.</div>
+        <div class="effort">
+          <div class="elabel">Effort required</div>
+          <div class="ebar"><span style="width:20%"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="margin-bottom:0;">
+    <div class="eyebrow">Still figuring out</div>
+    <h2>What we'd love your honest take on</h2>
+    <div class="qgrid">
+      <div class="qcard"><span class="qmark">Q →</span><p>Would you actually trust and act on an automated AI visibility score?</p></div>
+      <div class="qcard"><span class="qmark">Q →</span><p>Would you rather execute the fix in-house (SEO team), or want it handled for you entirely?</p></div>
+      <div class="qcard"><span class="qmark">Q →</span><p>Does regional-language visibility (Hindi, Tamil, etc.) matter to your current growth strategy?</p></div>
+      <div class="qcard"><span class="qmark">Q →</span><p>What would make you actually pull the trigger and pay for this?</p></div>
+    </div>
+  </div>
+
+  <!-- Frictionless CTA -->
+  <div class="cta-box">
+    <h3>Curious where you stand?</h3>
+    <p>Drop your brand URL, and I'll manually run a free baseline AI visibility test for you within 24 hours.</p>
+    <form class="cta-form" onsubmit="event.preventDefault(); alert('In a live environment, this would submit their URL to you!');">
+      <input type="text" placeholder="yourbrand.com" required>
+      <button type="submit">Run Free Test</button>
+    </form>
+  </div>
+
+  <footer>This is an early-stage idea we're validating — not a finished product. Honest reactions, including "this is useless, here's why," are worth more to us than polite encouragement.</footer>
+
+</div>
+</body>
+</html>
